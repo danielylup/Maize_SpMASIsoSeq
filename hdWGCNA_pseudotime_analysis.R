@@ -89,22 +89,16 @@ ModuleNetworkPlot(VR03tleaf_WGCNA)
 library(monocle3)
 library(SeuratWrappers)
 
-
-cds <- as.cell_data_set(VR03tleaf_WGCNA)
-# Generate trajectory on UMAP 
-cds <- cluster_cells(cds, reduction_method='UMAP')
-cds <- learn_graph(cds, use_partition = FALSE, learn_graph_control = list(prune_graph=TRUE, ncenter=500))
-
-VR03tleaf_seurat_WGCNA[["UMAP"]] <- VR03tleaf_seurat_WGCNA[["umap_iso"]]
+VR03tleaf_WGCNA[["UMAP"]] <- VR03tleaf_WGCNA[["umap_iso"]]
 # convert the seurat object to CDS
-cds <- as.cell_data_set(VR03tleaf_seurat_WGCNA)
+cds <- as.cell_data_set(VR03tleaf_WGCNA)
 # run the monocle clustering
 cds <- cluster_cells(cds, reduction_method='UMAP')
 # learn graph for pseudotime
 cds <- learn_graph(cds)
 
 # plot the trajectory graph on UMAP plot
-p1 <- plot_cells(
+pseu1 <- plot_cells(
   cds = cds,
   color_cells_by = "embryonic.vein",
   show_trajectory_graph = TRUE,
@@ -125,30 +119,19 @@ VR03tleaf_WGCNA$leaf_pseudotime <- ifelse(VR03tleaf_WGCNA$embryonic.vein %in% c(
 VR03tleaf_WGCNA$UMAP1 <- VR03tleaf_WGCNA@reductions$umap_iso@cell.embeddings[,1]
 VR03tleaf_WGCNA$UMAP2 <- VR03tleaf_WGCNA@reductions$umap_iso@cell.embeddings[,2]
 
-pseu_leaf <- VR03tleaf_seurat_WGCNA@meta.data %>%
+#plot module dynamics in pseudotime trajectory
+pseu_leaf <- VR03tleaf_WGCNA@meta.data %>%
     ggplot(aes(x=UMAP1, y=UMAP2, color=leaf_pseudotime)) +
-    ggrastr::rasterise(geom_point(size=3), dpi=500, scale=0.75) +
+    ggrastr::rasterise(geom_point(size=3), dpi=600, scale=0.75) +
     coord_equal() +
     scale_color_gradientn(colors=viridis(256), na.value='grey') +
     umap_theme()
-
-pseu_vein <- VR03tleaf_seurat_WGCNA@meta.data %>%
+pseu_vein <- VR03tleaf_WGCNA@meta.data %>%
     ggplot(aes(x=UMAP1, y=UMAP2, color=vein_pseudotime)) +
-    ggrastr::rasterise(geom_point(size=3), dpi=500, scale=0.75) +
+    ggrastr::rasterise(geom_point(size=3), dpi=600, scale=0.75) +
     coord_equal() +
     scale_color_gradientn(colors=plasma(256), na.value='grey') +
     umap_theme()
-
-#plot module dynamics in pseudotime trajectory
-PlotModuleTrajectory(
-    VR03tleaf_seurat_WGCNA,
-    pseudotime_col = 'leaf_pseudotime'
-)
-
-PlotModuleTrajectory(
-    VR03tleaf_seurat_WGCNA,
-    pseudotime_col = 'vein_pseudotime'
-)
 
 
 
@@ -174,7 +157,7 @@ VR03tleaf_hubgene <- (merge(VR03tleaf_hubgene, PB_newname_list, by = "Isoform"))
 
 # GO term enrichment using gprofiler2
 for(i in 1:length(mod)) {
-  filenames <-paste0("./hdWGCNA_analysis/Module_gprofiler_tleaf_25hubg/module_", mod[i], ".png")
+  filenames <- paste0("./hdWGCNA_analysis/Module_gprofiler_tleaf_25hubg/module_", mod[i], ".png")
   VR03tleaf_gost <- gost((subset(VR03tleaf_hubgene, module == mod[i]))$Gene, organism = "zmays", sources = c("GO:BP", "KEGG"), highlight = TRUE)
   if(is.null(VR03tleaf_gost)){
     print(paste0("There is no enriched GO term in module ", mod[i], "! Skip output table!"))
