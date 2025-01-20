@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# Credit to David Soh, who wrote the script for this tool
 # %%
 from dttimeframe.timeFrame import tag
 import argparse
