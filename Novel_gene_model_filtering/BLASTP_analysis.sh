@@ -1,5 +1,5 @@
 # split the fa sequence of Novel gene model into 100 sequences parts
-seqkit split2 -j 56 -s 100 -O ./Maize_V5ext/blastp_analysis/ZmNovelTranscript_sequence2.fa.split/Novel_gene_list/ ./Maize_V5ext/ZmNovelTranscript_sequence.fa
+seqkit split2 -j 56 -s 100 -O ./Maize_V5ext/blastp_analysis/ZmNovelTranscript_sequence2.fa.split/ ./Maize_V5ext/ZmNovelTranscript_sequence.fa
 
 ################################################################################################################################################################################
 ##### remove novel gene models that overlapped with other gene models  #####
